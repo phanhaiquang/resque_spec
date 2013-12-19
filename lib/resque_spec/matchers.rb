@@ -83,6 +83,8 @@ RSpec::Matchers.define :have_queued do |*expected_args|
     matched = queue(actual).select do |entry|
       klass = entry.fetch(:class)
       args = entry.fetch(:args)
+      @args = [] if @args.nil?
+      @args << args
       klass.to_s == actual.to_s && expected_args == args
     end
 
@@ -94,7 +96,7 @@ RSpec::Matchers.define :have_queued do |*expected_args|
   end
 
   failure_message_for_should do |actual|
-    "expected that #{actual} would have [#{expected_args.join(', ')}] queued#{@times_info}"
+    "expected that #{actual} would have [#{expected_args.join(', ')}] queued#{@times_info} (actual queue is #{@args})"
   end
 
   failure_message_for_should_not do |actual|
